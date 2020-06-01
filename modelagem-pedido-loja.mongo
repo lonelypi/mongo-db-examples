@@ -1,0 +1,30 @@
+db.clientes.aggregate([{
+    $match: {
+        nome: "Joao Cesar"
+        }
+    },{
+        $project: {
+            _id: 0,
+            id_cliente: "$_id",
+            endereco: "$enredeco",
+            data: ISODate(),
+            produtos: "$carrinho.produtos",
+            valorTotal: {
+                $sum: "$carrinho.produtos.preco"
+            }
+        }
+    },{
+        $merge: "pedidos"
+    }
+]).pretty()
+
+db.clientes.update({ nome: "Joao Cesar"}, {
+    $set: {
+        "carrinho.produtos": []
+    }
+})
+
+db.lojas.insertOne({
+    nome: "Apple Store",
+    endereco: "Av. Roque Petroni Junior, 1080"
+})

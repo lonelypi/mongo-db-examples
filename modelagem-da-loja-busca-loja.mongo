@@ -1,0 +1,34 @@
+//Buscar os produtos de tal loja.
+db.lojas.aggregate([{
+    $match: {
+        nome: "Apple Store"
+        }
+    },{
+        $lookup: {
+            from: "produtos",
+            localField: "produtos",
+            foreignField: "_id",
+            as: "listaProdutos"
+        }
+}]).pretty()
+
+//Buscar as lojas que tal produto eh vendido.
+db.produtos.aggregate([{
+    $match: {
+        modelo:"Moto G7"
+    }
+}, {
+    $lookup: {
+        from: "lojas",
+        localField: "vendido_em",
+        foreignField: "_id",
+        as: "listaDeLojas"
+    }
+}]).pretty()
+
+//tirar os produtos de loja
+db.lojas.updateMany({}, {
+    $unset: {
+        produtos: 1
+    }
+})
